@@ -1,0 +1,93 @@
+
+#Stacker
+#Character braucht Hilfe(Strichmännchen kommt reingeslidet)
+#Wenn fertig, wird je nach skala gemessen wie gut man war(0=Box-> Nachricht:"You may want to open up your eyes when playing"; 3 Boxen-> STacking amateur; 15 boxes-> Stacking grandmaster)
+#zuerst reihe mit 4 Boxen dann 3 boxen dann 2 boxen dann 1 box
+#bei game over soll es blinken
+#bei gewinnne blinken mit konfetti oder sich wechgselnden farben
+#sound wie bei fnaf mit yay wenn man es schafft
+#highscore berechnet sich mit Zeit und Blockreihe
+#score kann man abspeichern
+#nach reihe ändern sich die blöcke mit randomised farben
+#vielleicht eine schicke umrandung für das fenster
+#text to speech für nachricht des npcs(dnsl hello traveller)
+
+
+import pygame
+import time
+import random
+
+#Starten von Pygame
+pygame.init()
+
+# Fenster öffnen und anzeigen des Spielnamens
+window_width = 1024
+window_height = 768
+window = pygame.display.set_mode((window_width, window_height))
+pygame.display.set_caption("Stack Master")
+
+# Box-Eigenschaften
+box_x =0
+box_y = 708
+box_size = 60
+box_speed = 0.3
+direction = 1
+box_rect = pygame.Rect(box_x, box_y, box_size, box_size)
+
+score_lev = 0
+
+#Farben(Blöcke leuchten in zufällig generierten Farben, nach dem diese eingestapelt wurden soll die Farbe stoppen und beibehalten werden)
+black = (122, 139, 139)
+
+def randomised_color():
+    numbers = []
+
+    while len(numbers) < 3:
+        # Generierung einer Nummer zwischen 0 und 255
+        num = random.randint(0, 255)
+
+        # Prüfen ob die zufälligen Zahlen sich mindestens 50 Zahlen von einander unterscheiden
+        if all(abs(num - existing_num) >= 50 for existing_num in numbers):
+            numbers.append(num)
+
+    return numbers
+
+# Generierung von 3 zufälligen Zahlen
+random_color=randomised_color()
+
+# Hauptschleife
+running = True
+while running:
+    
+    #Stoppen wenn die Taste gedrückt wird
+    for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    box_speed = 0 
+                    score_lev += 1
+
+    # Box bewegen
+    box_x += box_speed * direction
+
+    if box_x + box_size >= window_width:
+        box_x = window_width - box_size
+        direction = -1  
+
+    if box_x <= 0:
+        box_x = 0
+        direction = 1  
+
+    # Hintergrund löschen
+    window.fill(black)
+
+    # Box zeichnen
+    pygame.draw.rect(window, random_color, pygame.Rect(box_x, box_y, box_size, box_size))
+    
+
+    # Fenster aktualisieren
+    pygame.display.flip()
+
+# Pygame beenden
+pygame.quit()
